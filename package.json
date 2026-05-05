@@ -1,0 +1,24 @@
+{
+  "name": "quiet-archive",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "python3 scripts/build_index.py && python3 scripts/build_search_index.py && astro build",
+    "preview": "astro preview",
+    "check": "python3 scripts/check.py",
+    "index": "python3 scripts/build_index.py && python3 scripts/build_search_index.py",
+    "index:search": "python3 scripts/build_search_index.py",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^5.0.4",
+    "@astrojs/preact": "^5.1.2",
+    "astro": "^6.2.2",
+    "preact": "^10.29.1"
+  }
+}
