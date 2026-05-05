@@ -10,11 +10,18 @@
 
 [简体中文](#简体中文) · [English](#english)
 
-<p>
-  <img src="./assets/material/theme-1.png" alt="Quiet Archive 主题示例预览" width="720" />
-</p>
+<table align="center">
+  <tr>
+    <td align="center"><b>Theme 1: Quiet</b></td>
+    <td align="center"><b>Theme 2: Vibrant Forest</b></td>
+  </tr>
+  <tr>
+    <td><img src="./assets/material/theme-1.png" alt="Theme 1 Preview" width="360" /></td>
+    <td><img src="./assets/material/theme-2.png" alt="Theme 2 Preview" width="360" /></td>
+  </tr>
+</table>
 
-<p>
+<p align="center">
   <img src="./assets/material/claude-code-usage.png" alt="使用 Claude Code 生成前端展示页面的示例" width="720" />
 </p>
 

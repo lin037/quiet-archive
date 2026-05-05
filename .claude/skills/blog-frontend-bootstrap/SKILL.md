@@ -26,6 +26,8 @@ Frontend-facing development normally happens in these areas:
 - `src/layouts` for shared document or page shells when useful;
 - `src/styles` for global styles, design tokens, prose styles, themes, or other styling strategy chosen by the agent.
 
+If there are no relevant folders, please create new ones, but be careful not to make major changes.
+
 These directories are working areas, not templates. Do not assume the current files inside them are canonical. Inspect them only to understand the existing project state, then decide whether to extend, reorganize, or replace the presentation layer according to the user's goal.
 
 Generated frontend work must not modify unless explicitly requested:
