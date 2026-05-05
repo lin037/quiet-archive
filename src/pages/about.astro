@@ -1,0 +1,44 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { getCollection } from 'astro:content';
+import { render } from 'astro:content';
+
+const posts = await getCollection('posts');
+const aboutEntry = posts.find(p => p.id === 'about');
+
+let Content: any = null;
+let title = '关于';
+let description = '';
+
+if (aboutEntry) {
+  const rendered = await render(aboutEntry);
+  Content = rendered.Content;
+  title = (aboutEntry.data as any).title || '关于';
+  description = (aboutEntry.data as any).summary || (aboutEntry.data as any).description || '';
+}
+---
+
+<PageLayout title={`${title} — 静档`} description={description}>
+  <article class="about-page">
+    <header class="about-header">
+      <h1 class="about-title">{title}</h1>
+    </header>
+    <div class="prose">
+      {Content && <Content />}
+    </div>
+  </article>
+</PageLayout>
+
+<style>
+  .about-header {
+    margin-bottom: var(--space-10);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .about-title {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    letter-spacing: var(--tracking-tight);
+  }
+</style>

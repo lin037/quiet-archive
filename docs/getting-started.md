@@ -118,7 +118,7 @@ npm run dev
 在项目根目录打开 Claude Code（或其他支持 skill 的 AI 编码工具），使用类似下面的提示词：
 
 ```text
-请使用 blog-frontend-bootstrap skill，为这个博客项目重新设计并生成一套前端。
+/blog-frontend-bootstrap 请为这个博客项目重新设计并生成一套前端页面。
 
 请先自行阅读项目中的 docs、.claude/skills 和 assets/placeholders/image-ratios.md，
 理解项目 API、内容结构、设计规范、可用素材和约束后，再给出你的设计方案并开始实现。
@@ -129,7 +129,7 @@ npm run dev
 更短的版本：
 
 ```text
-请使用 blog-frontend-bootstrap skill 重做博客前端。
+/blog-frontend-bootstrap 重做博客前端。
 请先阅读项目文档和现有 skill，理解 API、内容结构和素材后，自己完成设计与实现。
 我的偏好是：<一句话偏好>。
 ```

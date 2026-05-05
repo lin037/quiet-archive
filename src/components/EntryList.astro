@@ -1,0 +1,115 @@
+---
+import type { ContentEntry } from '../api/types';
+
+export interface Props {
+  entries: ContentEntry[];
+  showType?: boolean;
+}
+
+const { entries, showType = false } = Astro.props;
+---
+
+<ul class="entry-list">
+  {entries.map((entry) => (
+    <li class="entry-item">
+      <a href={entry.uri} class="entry-link">
+        <div class="entry-main">
+          <h3 class="entry-title">{entry.title}</h3>
+          {entry.summary && <p class="entry-summary">{entry.summary}</p>}
+        </div>
+        <div class="entry-aside">
+          {showType && <span class="entry-type">{entry.typeSlug}</span>}
+          {entry.date && <time class="entry-date" datetime={entry.date}>{entry.date.slice(0, 10)}</time>}
+        </div>
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .entry-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .entry-item {
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .entry-item:first-child {
+    border-top: 1px solid var(--color-border-subtle);
+  }
+
+  .entry-link {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding: var(--space-5) var(--space-2);
+    text-decoration: none;
+    transition: background var(--duration-fast) var(--ease-default);
+    border-radius: var(--radius-sm);
+  }
+
+  .entry-link:hover {
+    background: var(--color-accent-soft);
+  }
+
+  .entry-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .entry-title {
+    font-size: var(--text-base);
+    font-weight: 500;
+    color: var(--color-text);
+    line-height: var(--leading-snug);
+  }
+
+  .entry-summary {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    margin-top: var(--space-1);
+    line-height: var(--leading-normal);
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .entry-aside {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-shrink: 0;
+  }
+
+  .entry-type {
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-wide);
+    color: var(--color-text-tertiary);
+    background: var(--color-bg-secondary);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+  }
+
+  .entry-date {
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 480px) {
+    .entry-link {
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .entry-aside {
+      order: -1;
+    }
+  }
+</style>

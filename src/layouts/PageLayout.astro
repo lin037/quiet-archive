@@ -1,0 +1,45 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  type?: string;
+  wide?: boolean;
+}
+
+const { title, description, ogImage, type, wide = false } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} ogImage={ogImage} type={type}>
+  <div class="page-shell">
+    <SiteHeader />
+    <main class:list={['main-content', { wide }]}>
+      <slot />
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<style>
+  .page-shell {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .main-content {
+    flex: 1;
+    width: 100%;
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: var(--space-10) var(--page-padding) var(--space-20);
+  }
+
+  .main-content.wide {
+    max-width: var(--page-width);
+  }
+</style>

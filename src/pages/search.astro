@@ -1,0 +1,42 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+---
+
+<PageLayout title="搜索 — 静档" description="搜索所有内容。">
+  <header class="page-header">
+    <h1 class="page-title">搜索</h1>
+  </header>
+
+  <div id="search-app">
+    <noscript>
+      <p class="noscript-msg">搜索功能需要 JavaScript 支持。</p>
+    </noscript>
+  </div>
+</PageLayout>
+
+<script>
+  import { render, h } from 'preact';
+  import SearchIsland from '../components/SearchIsland';
+
+  const root = document.getElementById('search-app');
+  if (root) {
+    render(h(SearchIsland, null), root);
+  }
+</script>
+
+<style>
+  .page-header {
+    margin-bottom: var(--space-8);
+  }
+
+  .page-title {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .noscript-msg {
+    color: var(--color-text-tertiary);
+    font-size: var(--text-sm);
+  }
+</style>

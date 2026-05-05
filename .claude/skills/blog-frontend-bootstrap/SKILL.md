@@ -149,6 +149,24 @@ Do not invent content types, routes, frontmatter fields, or data relationships. 
 
 Additional content schema fields may exist for specific content, such as `stack`, `links`, and `workStatus`, but do not make the whole frontend depend on them unless the content actually contains them.
 
+### Cover Image Handling
+
+The `cover` field stores the author's declared image path, not necessarily the final build-safe image URL.
+
+Recommended authoring format:
+
+```yaml
+cover: assets/covers/my-post.png
+```
+
+When rendering covers in Astro pages or components, always resolve the value through `resolveAssetSrc()` from `src/api/assets.ts`:
+
+```ts
+const coverSrc = resolveAssetSrc(entry.cover);
+```
+
+Do not pass `entry.cover` directly to `<img src>` unless it is already an external `http(s)` URL. `resolveAssetSrc()` handles local `assets/` imports and returns the Astro build output URL.
+
 ## Placeholder Image Guidance
 
 The project includes local placeholder images under `assets/placeholders`. Read `assets/placeholders/image-ratios.md` before using them.
@@ -226,6 +244,42 @@ Use dynamic routes. Build static paths from `discoverTypes()` or `getNavTypes()`
 - `qa`: question-answer oriented list;
 - `project`: project log timeline;
 - `gallery`: image-forward grid.
+
+When a type contains nested directories, do not flatten every descendant entry into one list by default. Prefer this order:
+
+1. Show direct child directories from `getSubDirectories(typeSlug)` first, as navigable section cards with title, summary/description, and a clear affordance to enter the section.
+2. Show direct non-directory entries from `getEntriesInDir(typeSlug)` after the directory cards.
+3. If there are no child directories, a flat list from `getEntriesByType(typeSlug)` is acceptable.
+
+### Directory and subdirectory pages
+
+Directory pages come from `README.md` entries where `entry.isDirectory` is `true`. They can appear at any nested URL depth, depending on the user's `posts/` structure.
+
+When generating nested content routes, the agent should support a directory-page experience, not render directories as normal articles. A good directory page usually includes:
+
+- breadcrumbs from `getBreadcrumb(entry.uri)`;
+- directory title and summary/description from the README frontmatter;
+- README body rendered as introductory `.prose` content when present;
+- child directory cards from `getSubDirectories(entry.dirPath)`;
+- direct child content entries from `getEntriesInDir(entry.dirPath)`.
+
+In a catch-all route such as `[...slug].astro`, include both content entries and directory entries in `getStaticPaths()`, then choose the layout by `entry.isDirectory`:
+
+```astro
+---
+const isDirectory = entry.isDirectory;
+---
+
+{isDirectory ? (
+  <DirectoryLayout entry={entry} />
+) : (
+  <ContentLayout entry={entry} headings={headings}>
+    {Content && <Content />}
+  </ContentLayout>
+)}
+```
+
+Top-level type pages may be handled separately by `[type]/index.astro`; deeper README directory pages should be handled by the catch-all route.
 
 ### Detail pages
 

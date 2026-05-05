@@ -190,7 +190,7 @@ posts/column/archive-story/
 | `description` | string | 描述（目录页用，回退到 summary） |
 | `tags` | string[] | 标签 |
 | `featured` | boolean | 是否精选 |
-| `cover` | string | 封面图 URL |
+| `cover` | string | 封面图路径，推荐写成 `assets/...`，前端用 `resolveAssetSrc()` 解析 |
 | `updated` | string | 更新日期 |
 | `series` | string | 所属系列 |
 | `order` | number | 自定义排序权重 |
@@ -202,6 +202,16 @@ README 专属字段：
 | `display.defaultView` | 默认展示方式 |
 | `display.density` | 展示密度 |
 | `showInNav` | 是否出现在导航 |
+
+### 4.5 图片资源与 `cover`
+
+文章的 `cover` 字段保存的是内容作者声明的资源路径，推荐指向项目根目录 `assets/` 下的图片，例如：
+
+```yaml
+cover: assets/covers/my-post.png
+```
+
+前端不要直接把 `entry.cover` 当作最终图片地址使用，而应该通过 `src/api/assets.ts` 的 `resolveAssetSrc(entry.cover)` 解析。这样 Astro 才能在构建时正确处理本地图片资源、哈希文件名和最终输出路径。
 
 ---
 
@@ -296,6 +306,30 @@ getArchiveStats(): Promise<ArchiveStats>
 1. **只通过 `src/api/` 取数据**，不直接读 Astro collection、不解析 frontmatter。
 2. **任何页面都应该在没有运行时的情况下能构建出来**（SSR 可选，但 fork 用户默认跑静态构建）。
 3. **视觉完全由你决定**，不需要和默认实现一致。样式、设计 token、主题和组件边界都应服务于最终体验。
+
+### 7.1 目录和子目录页面
+
+目录页来自 `README.md`，在 `ContentEntry` 中会表现为 `entry.isDirectory === true`。前端生成时应把目录页当作专题/专栏/卷首页，而不是普通文章页。
+
+推荐实现方式：
+
+- **类型落地页**：对于某个内容类型根路径，先用 `getSubDirectories(typeSlug)` 展示直接子目录卡片，再用 `getEntriesInDir(typeSlug)` 展示当前类型根目录下的直接内容；如果没有子目录，再退回到普通列表。
+- **子目录页**：对于任意深度的目录路径，使用目录页布局展示面包屑、标题、README 正文、子目录列表和直接子内容列表。
+- **动态路由分流**：在 catch-all 路由中同时生成普通内容和目录内容，渲染时根据 `entry.isDirectory` 选择目录布局或正文布局。
+
+简化示意：
+
+```astro
+{entry.isDirectory ? (
+  <DirectoryLayout entry={entry} />
+) : (
+  <ContentLayout entry={entry} headings={headings}>
+    {Content && <Content />}
+  </ContentLayout>
+)}
+```
+
+这样可以让 `posts/<type>/**/README.md` 形成层层可进入的目录页面，而不是被误渲染成普通文章。
 
 推荐配合 `.claude/skills/blog-frontend-bootstrap` skill 让 Claude Code 基于项目 API、文档、内容结构和素材生成前台展示层，详见 [getting-started.md](./getting-started.md#3-用-claude-code-生成专属前端推荐流程)。
 

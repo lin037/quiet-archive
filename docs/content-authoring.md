@@ -113,14 +113,38 @@ status: published                    # published | draft | archived
 summary: 一句话描述                   # 列表展示
 tags: [frontend, architecture]       # 标签数组
 featured: false                      # 是否精选
-cover: /assets/covers/xxx.png        # 可选封面
+cover: assets/covers/xxx.png         # 可选封面，指向 assets/ 下的图片
 updated: 2026-05-06                  # 可选更新日期
 series: 前端编辑器                    # 可选所属系列
 order: 1                             # 可选自定义排序权重（越小越靠前）
 ---
 ```
 
-### 3.2 目录页（`README.md`）
+### 3.2 封面图 `cover`
+
+`cover` 是可选字段，用于文章卡片、详情页头图、分享图等前台展示场景。推荐把图片放在项目根目录的 `assets/` 下，并在 frontmatter 中写成**相对 `assets/` 的路径**：
+
+```yaml
+cover: assets/covers/my-post.png
+```
+
+也可以写成带前导 `/` 的形式：
+
+```yaml
+cover: /assets/covers/my-post.png
+```
+
+两种写法都会被前端通过 `src/api/assets.ts` 中的 `resolveAssetSrc()` 解析为 Astro 构建后的图片地址。生成或编写前端时，应该优先使用：
+
+```ts
+const coverSrc = resolveAssetSrc(entry.cover);
+```
+
+不要直接把 `entry.cover` 当作最终 `<img src>` 使用，否则在 Astro 构建后的资源路径、哈希文件名和部署前缀场景下可能不稳定。
+
+如果文章没有 `cover`，前端可以根据视觉设计使用排版、类型标签、占位图片或纯文字卡片作为回退。项目自带的占位图片位于 `assets/placeholders/`，适合开发前端时测试不同图片比例。
+
+### 3.3 目录页（`README.md`）
 
 ```yaml
 ---
@@ -138,7 +162,7 @@ showInNav: true                      # 是否显示在顶部导航
 （可选）目录页的正文介绍。
 ```
 
-### 3.3 `status` 可见性语义
+### 3.4 `status` 可见性语义
 
 `status` 是构建期的公开开关：
 
@@ -160,7 +184,7 @@ showInNav: true                      # 是否显示在顶部导航
 
 > 注意：根目录特殊页取决于你的前端实现。`posts/about.md` 是一个特殊文件，它位于 `posts/` 根目录而非某个类型栏下，通常由前端的 `/about` 页面路由直接读取，不参与类型栏的自动发现和列表展示。不要把未发布或敏感内容放进这类被页面直接读取的文件；正式生成自己的前端时，也应让特殊页面遵循同样的 `published` 过滤约定。
 
-### 3.4 `display.defaultView` 可选值
+### 3.5 `display.defaultView` 可选值
 
 | 值 | 适合内容 |
 |---|---|

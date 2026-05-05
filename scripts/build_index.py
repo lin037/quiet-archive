@@ -79,7 +79,7 @@ def build_content_index() -> list[dict]:
                 'uri': uri,
                 'type': content_type,
                 'title': fm.get('title', 'Untitled'),
-                'date': fm.get('date', ''),
+                'date': str(fm.get('date', '')) if fm.get('date') else '',
                 'status': status,
                 'summary': fm.get('summary', ''),
                 'description': fm.get('description', fm.get('summary', '')),
@@ -92,7 +92,7 @@ def build_content_index() -> list[dict]:
             if fm.get('cover'):
                 entry['cover'] = fm['cover']
             if fm.get('updated'):
-                entry['updated'] = fm['updated']
+                entry['updated'] = str(fm['updated'])
             if fm.get('series'):
                 entry['series'] = fm['series']
             if fm.get('order') is not None:

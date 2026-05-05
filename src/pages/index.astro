@@ -1,0 +1,454 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import EntryList from '../components/EntryList.astro';
+import { getRecentEntries, getFeaturedEntries, getNavTypes } from '../api/content';
+import { getArchiveStats } from '../api/stats';
+import { resolveAssetSrc } from '../api/assets';
+
+const recent = await getRecentEntries(5);
+const featured = await getFeaturedEntries();
+const types = await getNavTypes();
+const stats = await getArchiveStats();
+
+const heroImg = resolveAssetSrc('/assets/placeholders/download-1.png');
+const typeImages = [
+  resolveAssetSrc('/assets/placeholders/download-4.png'),
+  resolveAssetSrc('/assets/placeholders/download-5.png'),
+  resolveAssetSrc('/assets/placeholders/download.png'),
+];
+---
+
+<PageLayout title="静档 — 个人技术档案馆" description="一个安静的个人档案馆，收录文章、笔记与专栏。" wide={true}>
+  <!-- Hero: Visual anchor with atmospheric image -->
+  <section class="hero">
+    <div class="hero-visual">
+      <img
+        src={heroImg}
+        alt=""
+        class="hero-image"
+        loading="eager"
+      />
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-badge">个人技术档案馆</div>
+      <h1 class="hero-title">静档</h1>
+      <p class="hero-desc">
+        收录正式文章、灵感笔记与主题专栏。<br/>
+        不追踪，不推送，只安静地存在。
+      </p>
+      <div class="hero-stats">
+        <span class="hero-stat"><strong>{stats.total}</strong> 篇内容</span>
+        <span class="hero-stat-sep">·</span>
+        <span class="hero-stat"><strong>{stats.byType.length}</strong> 个分区</span>
+        <span class="hero-stat-sep">·</span>
+        <span class="hero-stat"><strong>{stats.tags.length}</strong> 个标签</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured: Uniform card design, no fake covers -->
+  {featured.length > 0 && (
+    <section class="featured-section">
+      <div class="section-label">
+        <span class="label-dot"></span>
+        精选文章
+      </div>
+      <div class="featured-grid">
+        {featured.map((entry, i) => (
+          <a href={entry.uri} class="featured-card">
+            <div class="featured-number" aria-hidden="true">{String(i + 1).padStart(2, '0')}</div>
+            <div class="featured-body">
+              <span class="featured-type">{entry.typeSlug}</span>
+              <h3 class="featured-title">{entry.title}</h3>
+              {entry.summary && <p class="featured-summary">{entry.summary}</p>}
+            </div>
+            <time class="featured-date">{entry.date.slice(0, 10)}</time>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- Content Types: Visual navigation cards with atmospheric images -->
+  <section class="types-section">
+    <div class="section-label">
+      <span class="label-dot"></span>
+      内容分区
+    </div>
+    <div class="types-grid">
+      {types.map((t, i) => (
+        <a href={`/${t.slug}`} class="type-card">
+          <div class="type-card-image">
+            <img
+              src={typeImages[i] || typeImages[0]}
+              alt=""
+              loading="lazy"
+            />
+          </div>
+          <div class="type-card-body">
+            <h3 class="type-card-title">{t.title}</h3>
+            {t.description && <p class="type-card-desc">{t.description}</p>}
+            <span class="type-card-count">
+              {stats.byType.find(b => b.slug === t.slug)?.count || 0} 篇
+            </span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Recent entries: full width -->
+  <section class="recent-section">
+    <div class="section-header">
+      <div class="section-label">
+        <span class="label-dot"></span>
+        最近更新
+      </div>
+      <a href="/archive" class="section-more">查看全部 →</a>
+    </div>
+    <EntryList entries={recent} showType={true} />
+  </section>
+</PageLayout>
+
+<style>
+  /* ─── Hero ─── */
+  .hero {
+    position: relative;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    margin-bottom: var(--space-20);
+    min-height: 320px;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .hero-visual {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(28, 25, 23, 0.88) 0%,
+      rgba(28, 25, 23, 0.5) 50%,
+      rgba(28, 25, 23, 0.15) 100%
+    );
+  }
+
+  :global([data-theme="dark"]) .hero-overlay {
+    background: linear-gradient(
+      to top,
+      rgba(20, 18, 17, 0.92) 0%,
+      rgba(20, 18, 17, 0.6) 50%,
+      rgba(20, 18, 17, 0.2) 100%
+    );
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    padding: var(--space-10) var(--space-8);
+    color: #fafaf9;
+    width: 100%;
+  }
+
+  .hero-badge {
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: var(--space-3);
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: var(--text-5xl);
+    font-weight: 800;
+    letter-spacing: var(--tracking-tighter);
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-4);
+  }
+
+  .hero-desc {
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    opacity: 0.75;
+    max-width: 420px;
+    margin-bottom: var(--space-5);
+  }
+
+  .hero-stats {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+    opacity: 0.6;
+  }
+
+  .hero-stat strong {
+    font-weight: 600;
+    opacity: 1;
+  }
+
+  .hero-stat-sep {
+    opacity: 0.4;
+  }
+
+  /* ─── Section Label ─── */
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--space-6);
+  }
+
+  .label-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-text-tertiary);
+  }
+
+  /* ─── Featured ─── */
+  .featured-section {
+    margin-bottom: var(--space-20);
+  }
+
+  .featured-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .featured-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--space-6);
+    padding: var(--space-6) var(--space-8);
+    text-decoration: none;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-elevated);
+    transition: border-color var(--duration-normal) var(--ease-default),
+                box-shadow var(--duration-normal) var(--ease-default),
+                transform var(--duration-normal) var(--ease-out);
+  }
+
+  .featured-card:hover {
+    border-color: var(--color-text-tertiary);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+  }
+
+  .featured-number {
+    font-size: var(--text-3xl);
+    font-weight: 800;
+    color: var(--color-border);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    letter-spacing: var(--tracking-tighter);
+    min-width: 2.5ch;
+  }
+
+  .featured-card:hover .featured-number {
+    color: var(--color-text-tertiary);
+  }
+
+  .featured-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+
+  .featured-type {
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-wide);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+  }
+
+  .featured-title {
+    font-size: var(--text-lg);
+    font-weight: 650;
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-text);
+    line-height: var(--leading-snug);
+  }
+
+  .featured-summary {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-normal);
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-top: var(--space-1);
+  }
+
+  .featured-date {
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* ─── Types ─── */
+  .types-section {
+    margin-bottom: var(--space-20);
+  }
+
+  .types-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+  }
+
+  .type-card {
+    text-decoration: none;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    transition: border-color var(--duration-normal) var(--ease-default),
+                box-shadow var(--duration-normal) var(--ease-default),
+                transform var(--duration-normal) var(--ease-out);
+  }
+
+  .type-card:hover {
+    border-color: var(--color-text-tertiary);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .type-card-image {
+    height: 120px;
+    overflow: hidden;
+    background: var(--color-bg-secondary);
+  }
+
+  .type-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.6;
+    transition: opacity var(--duration-normal) var(--ease-default),
+                transform var(--duration-slow) var(--ease-out);
+  }
+
+  .type-card:hover .type-card-image img {
+    opacity: 0.8;
+    transform: scale(1.04);
+  }
+
+  .type-card-body {
+    padding: var(--space-5);
+  }
+
+  .type-card-title {
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: var(--space-1);
+  }
+
+  .type-card-desc {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-normal);
+    margin-bottom: var(--space-2);
+  }
+
+  .type-card-count {
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  /* ─── Recent ─── */
+  .recent-section {
+    margin-bottom: var(--space-12);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .section-more {
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-default);
+  }
+
+  .section-more:hover {
+    color: var(--color-text-secondary);
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 768px) {
+    .hero {
+      min-height: 260px;
+    }
+
+    .hero-title {
+      font-size: var(--text-4xl);
+    }
+
+    .featured-card {
+      grid-template-columns: auto 1fr;
+      padding: var(--space-5) var(--space-5);
+    }
+
+    .featured-date {
+      display: none;
+    }
+
+    .types-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .type-card-image {
+      height: 100px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero-content {
+      padding: var(--space-6);
+    }
+
+    .hero-title {
+      font-size: var(--text-3xl);
+    }
+
+    .hero-stats {
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+
+    .featured-number {
+      font-size: var(--text-2xl);
+    }
+  }
+</style>

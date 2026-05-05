@@ -1,0 +1,75 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { getArchiveStats } from '../../api/stats';
+import { getEntriesByTag } from '../../api/content';
+
+const stats = await getArchiveStats();
+const tags = stats.tags;
+---
+
+<PageLayout title="标签 — 静档" description="按标签浏览所有内容。">
+  <header class="page-header">
+    <h1 class="page-title">标签</h1>
+    <p class="page-count">{tags.length} 个标签</p>
+  </header>
+
+  <div class="tag-list">
+    {tags.map(({ name, count }: { name: string; count: number }) => (
+      <a href={`/tags/${name}`} class="tag-item">
+        <span class="tag-name">#{name}</span>
+        <span class="tag-count">{count}</span>
+      </a>
+    ))}
+  </div>
+</PageLayout>
+
+<style>
+  .page-header {
+    margin-bottom: var(--space-10);
+  }
+
+  .page-title {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .page-count {
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    margin-top: var(--space-2);
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .tag-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-size: var(--text-sm);
+    transition: border-color var(--duration-fast) var(--ease-default),
+                background var(--duration-fast) var(--ease-default);
+  }
+
+  .tag-item:hover {
+    border-color: var(--color-text-tertiary);
+    background: var(--color-bg-secondary);
+  }
+
+  .tag-name {
+    color: var(--color-text);
+  }
+
+  .tag-count {
+    color: var(--color-text-tertiary);
+    font-size: var(--text-xs);
+  }
+</style>

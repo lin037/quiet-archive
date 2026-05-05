@@ -1,0 +1,58 @@
+---
+import ContentLayout from '../layouts/ContentLayout.astro';
+import DirectoryLayout from '../layouts/DirectoryLayout.astro';
+import { getAllEntries, getAllDirectoryEntries, discoverTypes } from '../api/content';
+import { getCollection } from 'astro:content';
+import { render } from 'astro:content';
+import type { ContentEntry } from '../api/types';
+
+export async function getStaticPaths() {
+  const entries = await getAllEntries();
+  const dirs = await getAllDirectoryEntries();
+  const types = await discoverTypes();
+  const typeSlugs = new Set(types.map(t => t.slug));
+
+  // Combine entries and dirs, but exclude:
+  // - top-level type directories (handled by [type]/index.astro)
+  // - 'about' (handled by about.astro)
+  const all = [...entries, ...dirs].filter((entry: ContentEntry) => {
+    const slug = entry.uri.replace(/^\//, '');
+    if (slug === 'about') return false;
+    if (typeSlugs.has(slug)) return false;
+    return true;
+  });
+
+  return all.map((entry: ContentEntry) => {
+    const slug = entry.uri.replace(/^\//, '');
+    return {
+      params: { slug },
+      props: { entry, rawId: entry.id },
+    };
+  });
+}
+
+const { entry, rawId } = Astro.props;
+
+// Get raw collection entry for rendering
+const posts = await getCollection('posts');
+const rawEntry = posts.find(p => p.id === rawId);
+
+let Content: any = null;
+let headings: any[] = [];
+
+if (rawEntry) {
+  const rendered = await render(rawEntry);
+  Content = rendered.Content;
+  headings = rendered.headings || [];
+}
+
+const isDirectory = entry.isDirectory;
+---
+
+{isDirectory ? (
+  <DirectoryLayout entry={entry} />
+) : (
+  <ContentLayout entry={entry} headings={headings}>
+    {Content && <Content />}
+  </ContentLayout>
+)}

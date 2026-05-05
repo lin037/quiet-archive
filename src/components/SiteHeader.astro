@@ -1,0 +1,175 @@
+---
+import { getNavTypes } from '../api/content';
+
+const types = await getNavTypes();
+const currentPath = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="/" class="site-logo" aria-label="静档首页">
+      <span class="logo-glyph">静</span>
+    </a>
+    <nav class="site-nav" aria-label="主导航">
+      <a href="/" class:list={['nav-link', { active: currentPath === '/' }]}>首页</a>
+      {types.map((t) => (
+        <a
+          href={`/${t.slug}`}
+          class:list={['nav-link', { active: currentPath.startsWith(`/${t.slug}`) }]}
+        >
+          {t.title}
+        </a>
+      ))}
+      <a href="/archive" class:list={['nav-link', { active: currentPath === '/archive' }]}>归档</a>
+    </nav>
+    <div class="header-actions">
+      <a href="/search" class="action-btn" aria-label="搜索">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+      </a>
+      <button class="action-btn theme-toggle" aria-label="切换主题" id="theme-toggle">
+        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="5"/>
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('theme-toggle');
+  btn?.addEventListener('click', () => {
+    const current = document.documentElement.dataset.theme;
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    localStorage.setItem('theme', next);
+  });
+</script>
+
+<style is:global>
+  /* Theme toggle icon visibility — must be global to reach [data-theme] on <html> */
+  [data-theme="light"] .icon-moon { display: none; }
+  [data-theme="dark"] .icon-sun { display: none; }
+</style>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: color-mix(in srgb, var(--color-bg) 85%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .header-inner {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: var(--space-4) var(--page-padding);
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+  }
+
+  .site-logo {
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .logo-glyph {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-bg);
+    background: var(--color-text);
+    border-radius: var(--radius-md);
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+
+  .site-logo:hover .logo-glyph {
+    transform: scale(1.05);
+  }
+
+  .site-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  .nav-link {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    transition: color var(--duration-fast) var(--ease-default),
+                background var(--duration-fast) var(--ease-default);
+  }
+
+  .nav-link:hover {
+    color: var(--color-text);
+    background: var(--color-accent-soft);
+  }
+
+  .nav-link.active {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin-left: auto;
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: var(--color-text-secondary);
+    border-radius: var(--radius-md);
+    transition: color var(--duration-fast) var(--ease-default),
+                background var(--duration-fast) var(--ease-default);
+  }
+
+  .action-btn:hover {
+    color: var(--color-text);
+    background: var(--color-accent-soft);
+  }
+
+  @media (max-width: 640px) {
+    .header-inner {
+      gap: var(--space-3);
+    }
+
+    .site-nav {
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      gap: 0;
+    }
+
+    .site-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-link {
+      white-space: nowrap;
+      padding: var(--space-2);
+    }
+  }
+</style>

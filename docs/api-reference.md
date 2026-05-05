@@ -94,7 +94,31 @@ interface ArchiveStats {
 | `getEntryByUri(uri)` | 通过 URI 获取单条 |
 | `paginate(items, page, pageSize)` | 通用分页工具 |
 
-### 1.3 `src/api/navigation.ts`
+### 1.3 目录与子目录页面用法
+
+目录页由 `README.md` 产生，API 中通过 `entry.isDirectory` 标识。生成前端时不要把目录页当普通文章处理。
+
+常见用法：
+
+- **类型落地页**：用 `getSubDirectories(typeSlug)` 获取直接子目录，并优先展示为目录卡片；再用 `getEntriesInDir(typeSlug)` 展示类型根目录下的直接内容。
+- **子目录页**：用 `getBreadcrumb(entry.uri)` 展示层级位置，用 `getSubDirectories(entry.dirPath)` 展示下级目录，用 `getEntriesInDir(entry.dirPath)` 展示直接子内容。
+- **统一目录查询**：也可以用 `getDirectoryListing(dirPath, { page, pageSize })` 一次拿到 `meta`、`directories`、`entries` 和分页信息。
+- **动态路由**：在 catch-all 路由中根据 `entry.isDirectory` 选择目录布局或正文布局。
+
+```astro
+{entry.isDirectory ? (
+  <DirectoryLayout entry={entry} />
+) : (
+  <ContentLayout entry={entry} headings={headings}>
+    {Content && <Content />}
+  </ContentLayout>
+)}
+```
+
+这适合任何需要层级组织的内容类型：类型根路径可以先展示直接子目录，任意更深层级的 `README.md` 继续作为目录页进入。
+
+---
+### 1.4 `src/api/navigation.ts`
 
 | 函数 | 说明 |
 |---|---|
@@ -102,17 +126,35 @@ interface ArchiveStats {
 | `getPrevNext(uri, typeSlug)` | 同类型下的上一篇 / 下一篇 |
 | `getTableOfContents(headings)` | 从 Astro 提供的 headings 提取 TOC（默认 h2-h4） |
 
-### 1.4 `src/api/stats.ts`
+### 1.5 `src/api/stats.ts`
 
 | 函数 | 说明 |
 |---|---|
 | `getArchiveStats()` | 返回 `ArchiveStats`：总数、分类型数、最近更新、标签频次 |
 
-### 1.5 `src/api/assets.ts`
+### 1.6 `src/api/assets.ts`
 
 资源引用辅助（当前轻量，后续会扩展为分享图路径解析等）。
 
-### 1.6 使用范例
+| 函数 | 说明 |
+|---|---|
+| `resolveAssetSrc(path)` | 将 frontmatter 中声明的本地 `assets/` 图片路径解析为 Astro 构建后的图片地址；远程 `http(s)` 地址会原样返回 |
+
+文章 `cover` 字段推荐写成相对 `assets/` 的路径，例如：
+
+```yaml
+cover: assets/covers/my-post.png
+```
+
+页面渲染时使用：
+
+```ts
+const coverSrc = resolveAssetSrc(entry.cover);
+```
+
+`ContentEntry.cover` 保留的是内容层声明值，不保证可以直接作为最终 `<img src>` 使用。
+
+### 1.7 使用范例
 
 ```astro
 ---

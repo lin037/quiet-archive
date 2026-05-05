@@ -1,0 +1,53 @@
+---
+export interface Props {
+  items: { label: string; href?: string }[];
+}
+
+const { items } = Astro.props;
+---
+
+{items.length > 0 && (
+  <nav class="breadcrumb" aria-label="面包屑导航">
+    {items.map((item, i) => (
+      <>
+        {i > 0 && <span class="separator" aria-hidden="true">/</span>}
+        {item.href ? (
+          <a href={item.href} class="crumb">{item.label}</a>
+        ) : (
+          <span class="crumb current" aria-current="page">{item.label}</span>
+        )}
+      </>
+    ))}
+  </nav>
+)}
+
+<style>
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--space-6);
+    flex-wrap: wrap;
+  }
+
+  .separator {
+    color: var(--color-text-tertiary);
+    opacity: 0.5;
+  }
+
+  .crumb {
+    color: var(--color-text-tertiary);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-default);
+  }
+
+  a.crumb:hover {
+    color: var(--color-text-secondary);
+  }
+
+  .crumb.current {
+    color: var(--color-text-secondary);
+  }
+</style>

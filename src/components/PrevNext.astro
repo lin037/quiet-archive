@@ -1,0 +1,77 @@
+---
+import type { ContentEntry } from '../api/types';
+
+export interface Props {
+  prev?: ContentEntry | null;
+  next?: ContentEntry | null;
+}
+
+const { prev, next } = Astro.props;
+---
+
+{(prev || next) && (
+  <nav class="prev-next" aria-label="前后文章导航">
+    <div class="pn-item prev">
+      {prev && (
+        <a href={prev.uri}>
+          <span class="pn-label">← 上一篇</span>
+          <span class="pn-title">{prev.title}</span>
+        </a>
+      )}
+    </div>
+    <div class="pn-item next">
+      {next && (
+        <a href={next.uri}>
+          <span class="pn-label">下一篇 →</span>
+          <span class="pn-title">{next.title}</span>
+        </a>
+      )}
+    </div>
+  </nav>
+)}
+
+<style>
+  .prev-next {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    margin-top: var(--space-16);
+    padding-top: var(--space-8);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .pn-item a {
+    display: block;
+    text-decoration: none;
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    transition: background var(--duration-fast) var(--ease-default);
+  }
+
+  .pn-item a:hover {
+    background: var(--color-bg-secondary);
+  }
+
+  .pn-item.next {
+    text-align: right;
+  }
+
+  .pn-label {
+    display: block;
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--space-1);
+  }
+
+  .pn-title {
+    font-size: var(--text-sm);
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  @media (max-width: 480px) {
+    .prev-next {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

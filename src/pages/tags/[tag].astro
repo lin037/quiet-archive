@@ -1,0 +1,76 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import EntryList from '../../components/EntryList.astro';
+import { getEntriesByTag, getAllEntries } from '../../api/content';
+import type { ContentEntry } from '../../api/types';
+
+export async function getStaticPaths() {
+  const entries = await getAllEntries();
+  const tagSet = new Set<string>();
+  for (const entry of entries) {
+    if (entry.tags) {
+      for (const tag of entry.tags) {
+        tagSet.add(tag);
+      }
+    }
+  }
+
+  return await Promise.all(
+    [...tagSet].map(async (tag) => {
+      const tagged = await getEntriesByTag(tag);
+      return {
+        params: { tag },
+        props: { tag, entries: tagged },
+      };
+    })
+  );
+}
+
+const { tag, entries } = Astro.props;
+---
+
+<PageLayout title={`#${tag} — 静档`} description={`标签「${tag}」下的所有内容。`}>
+  <header class="page-header">
+    <h1 class="page-title">#{tag}</h1>
+    <p class="page-count">{entries.length} 篇内容</p>
+  </header>
+
+  <EntryList entries={entries} showType={true} />
+
+  <nav class="back-link">
+    <a href="/tags">← 所有标签</a>
+  </nav>
+</PageLayout>
+
+<style>
+  .page-header {
+    margin-bottom: var(--space-10);
+  }
+
+  .page-title {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .page-count {
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    margin-top: var(--space-2);
+  }
+
+  .back-link {
+    margin-top: var(--space-10);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .back-link a {
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .back-link a:hover {
+    color: var(--color-text-secondary);
+  }
+</style>

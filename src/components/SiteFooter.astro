@@ -1,0 +1,83 @@
+---
+---
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="footer-logo">静</span>
+      <div class="footer-text">
+        <p class="footer-name">静档</p>
+        <p class="footer-slogan">安静地记录，耐心地构建</p>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <p>静态生成 · 文件驱动 · 无追踪</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--color-border);
+    margin-top: auto;
+  }
+
+  .footer-inner {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: var(--space-10) var(--page-padding);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-8);
+  }
+
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-bg);
+    background: var(--color-text);
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+  }
+
+  .footer-name {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .footer-slogan {
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    margin-top: 1px;
+  }
+
+  .footer-meta {
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    text-align: right;
+  }
+
+  @media (max-width: 480px) {
+    .footer-inner {
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .footer-meta {
+      text-align: left;
+    }
+  }
+</style>

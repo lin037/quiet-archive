@@ -1,0 +1,108 @@
+---
+import PageLayout from './PageLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import PrevNext from '../components/PrevNext.astro';
+import { getBreadcrumb, getPrevNext, getTableOfContents } from '../api/navigation';
+import type { ContentEntry } from '../api/types';
+
+export interface Props {
+  entry: ContentEntry;
+  headings?: { depth: number; slug: string; text: string }[];
+}
+
+const { entry, headings = [] } = Astro.props;
+
+const breadcrumb = await getBreadcrumb(entry.uri);
+const prevNext = await getPrevNext(entry.uri, entry.typeSlug);
+const toc = getTableOfContents(headings);
+---
+
+<PageLayout title={`${entry.title} — 静档`} description={entry.summary || entry.description || ''}>
+  <article class="article-page">
+    <Breadcrumb items={breadcrumb} />
+
+    <header class="article-header">
+      <h1 class="article-title">{entry.title}</h1>
+      {entry.summary && <p class="article-summary">{entry.summary}</p>}
+      <div class="article-meta">
+        {entry.date && <time datetime={entry.date}>{entry.date.slice(0, 10)}</time>}
+        {entry.updated && entry.updated !== entry.date && (
+          <span class="updated">更新于 {entry.updated.slice(0, 10)}</span>
+        )}
+      </div>
+      {entry.tags && entry.tags.length > 0 && (
+        <div class="article-tags">
+          {entry.tags.map((tag: string) => (
+            <a href={`/tags/${tag}`} class="tag">#{tag}</a>
+          ))}
+        </div>
+      )}
+    </header>
+
+    {toc.length > 0 && <TableOfContents items={toc} />}
+
+    <div class="prose">
+      <slot />
+    </div>
+
+    <PrevNext prev={prevNext.prev} next={prevNext.next} />
+  </article>
+</PageLayout>
+
+<style>
+  .article-page {
+    width: 100%;
+  }
+
+  .article-header {
+    margin-bottom: var(--space-12);
+    padding-bottom: var(--space-8);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .article-title {
+    font-family: var(--font-sans);
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    margin-bottom: var(--space-4);
+  }
+
+  .article-summary {
+    font-size: var(--text-lg);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-normal);
+    margin-bottom: var(--space-4);
+  }
+
+  .article-meta {
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+
+  .updated {
+    color: var(--color-text-tertiary);
+  }
+
+  .article-tags {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    margin-top: var(--space-3);
+  }
+
+  .tag {
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    transition: color var(--duration-fast) var(--ease-default);
+  }
+
+  .tag:hover {
+    color: var(--color-text-secondary);
+  }
+</style>

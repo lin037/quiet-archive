@@ -1,0 +1,72 @@
+---
+export interface TocItem {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+export interface Props {
+  items: TocItem[];
+}
+
+const { items } = Astro.props;
+---
+
+{items.length > 0 && (
+  <aside class="toc" aria-label="目录">
+    <details open>
+      <summary class="toc-title">目录</summary>
+      <nav>
+        <ul class="toc-list">
+          {items.map((item) => (
+            <li class:list={[`depth-${item.depth}`]}>
+              <a href={`#${item.slug}`}>{item.text}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </details>
+  </aside>
+)}
+
+<style>
+  .toc {
+    margin-bottom: var(--space-10);
+    padding: var(--space-5) var(--space-6);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-md);
+  }
+
+  .toc-title {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-3);
+  }
+
+  .toc-list li {
+    margin-top: var(--space-1);
+  }
+
+  .toc-list a {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    line-height: var(--leading-normal);
+    transition: color var(--duration-fast) var(--ease-default);
+  }
+
+  .toc-list a:hover {
+    color: var(--color-text);
+  }
+
+  .depth-3 { padding-left: var(--space-4); }
+  .depth-4 { padding-left: var(--space-8); }
+</style>
