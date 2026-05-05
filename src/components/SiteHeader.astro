@@ -8,7 +8,11 @@ const currentPath = Astro.url.pathname;
 <header class="site-header">
   <div class="header-inner">
     <a href="/" class="site-logo" aria-label="静档首页">
-      <span class="logo-glyph">静</span>
+      <span class="logo-glyph">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+          <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1.043-4.524a8.04 8.04 0 005.155-2.022 8.017 8.017 0 00-6.136-11.45 8.005 8.005 0 00-1.636 12.04l2.617 1.432z"/>
+        </svg>
+      </span>
     </a>
     <nav class="site-nav" aria-label="主导航">
       <a href="/" class:list={['nav-link', { active: currentPath === '/' }]}>首页</a>
@@ -24,17 +28,17 @@ const currentPath = Astro.url.pathname;
     </nav>
     <div class="header-actions">
       <a href="/search" class="action-btn" aria-label="搜索">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
           <circle cx="11" cy="11" r="8"/>
           <path d="m21 21-4.35-4.35"/>
         </svg>
       </a>
       <button class="action-btn theme-toggle" aria-label="切换主题" id="theme-toggle">
-        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
           <circle cx="12" cy="12" r="5"/>
           <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
         </svg>
-        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
           <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
         </svg>
       </button>
@@ -53,29 +57,39 @@ const currentPath = Astro.url.pathname;
 </script>
 
 <style is:global>
-  /* Theme toggle icon visibility — must be global to reach [data-theme] on <html> */
   [data-theme="light"] .icon-moon { display: none; }
   [data-theme="dark"] .icon-sun { display: none; }
 </style>
 
 <style>
   .site-header {
-    position: sticky;
-    top: 0;
+    position: fixed;
+    top: var(--space-6);
+    left: 0;
+    right: 0;
     z-index: 100;
-    background: color-mix(in srgb, var(--color-bg) 85%, transparent);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
   }
 
   .header-inner {
-    max-width: var(--page-width);
-    margin: 0 auto;
-    padding: var(--space-4) var(--page-padding);
+    pointer-events: auto;
+    background: color-mix(in srgb, var(--color-bg-elevated) 70%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
     display: flex;
     align-items: center;
-    gap: var(--space-6);
+    gap: var(--space-4);
+    box-shadow: var(--shadow-md);
+    transition: box-shadow var(--duration-normal) var(--ease-default);
+  }
+
+  .header-inner:hover {
+    box-shadow: var(--shadow-lg);
   }
 
   .site-logo {
@@ -87,18 +101,12 @@ const currentPath = Astro.url.pathname;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    font-size: var(--text-sm);
-    font-weight: 700;
-    color: var(--color-bg);
-    background: var(--color-text);
-    border-radius: var(--radius-md);
-    transition: transform var(--duration-fast) var(--ease-out);
+    color: var(--color-accent);
+    transition: transform var(--duration-normal) var(--ease-default);
   }
 
   .site-logo:hover .logo-glyph {
-    transform: scale(1.05);
+    transform: rotate(15deg) scale(1.1);
   }
 
   .site-nav {
@@ -109,12 +117,12 @@ const currentPath = Astro.url.pathname;
 
   .nav-link {
     font-size: var(--text-sm);
+    font-weight: 600;
     color: var(--color-text-secondary);
     text-decoration: none;
-    padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius-md);
-    transition: color var(--duration-fast) var(--ease-default),
-                background var(--duration-fast) var(--ease-default);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-full);
+    transition: all var(--duration-normal) var(--ease-default);
   }
 
   .nav-link:hover {
@@ -123,53 +131,56 @@ const currentPath = Astro.url.pathname;
   }
 
   .nav-link.active {
-    color: var(--color-text);
-    font-weight: 500;
+    color: var(--color-bg);
+    background: var(--color-accent);
   }
 
   .header-actions {
     display: flex;
     align-items: center;
     gap: var(--space-1);
-    margin-left: auto;
+    border-left: 1px solid var(--color-border);
+    padding-left: var(--space-3);
   }
 
   .action-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     color: var(--color-text-secondary);
-    border-radius: var(--radius-md);
-    transition: color var(--duration-fast) var(--ease-default),
-                background var(--duration-fast) var(--ease-default);
+    border-radius: var(--radius-full);
+    transition: all var(--duration-normal) var(--ease-default);
   }
 
   .action-btn:hover {
-    color: var(--color-text);
+    color: var(--color-accent);
     background: var(--color-accent-soft);
+    transform: translateY(-2px);
   }
 
   @media (max-width: 640px) {
+    .site-header {
+      top: auto;
+      bottom: var(--space-6);
+    }
+    
     .header-inner {
-      gap: var(--space-3);
+      padding: var(--space-2);
+      gap: var(--space-2);
     }
 
     .site-nav {
-      overflow-x: auto;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
       gap: 0;
     }
 
-    .site-nav::-webkit-scrollbar {
-      display: none;
-    }
-
     .nav-link {
-      white-space: nowrap;
-      padding: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+    }
+    
+    .header-actions {
+      padding-left: var(--space-2);
     }
   }
 </style>

@@ -25,6 +25,10 @@ body {
   line-height: var(--leading-normal);
   color: var(--color-text);
   background-color: var(--color-bg);
+  background-image: 
+    radial-gradient(circle at 15% 10%, var(--color-accent-soft) 0%, transparent 25%),
+    radial-gradient(circle at 85% 90%, var(--color-accent-soft) 0%, transparent 25%);
+  background-attachment: fixed;
   min-height: 100dvh;
   transition: background-color var(--duration-normal) var(--ease-default),
               color var(--duration-normal) var(--ease-default);
