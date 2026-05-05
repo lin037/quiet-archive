@@ -10,6 +10,14 @@
 
 [简体中文](#简体中文) · [English](#english)
 
+<p>
+  <img src="./assets/material/theme-1.png" alt="Quiet Archive 主题示例预览" width="720" />
+</p>
+
+<p>
+  <img src="./assets/material/claude-code-usage.png" alt="使用 Claude Code 生成前端展示页面的示例" width="720" />
+</p>
+
 </div>
 
 ---
