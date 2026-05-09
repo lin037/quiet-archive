@@ -164,9 +164,10 @@ Long-form content uses `.prose` class (already set up in `styles/prose.css`). An
 
 ### 8. Images & Assets
 
-- Use Astro's `<Image>` component when possible for automatic optimization
-- Local assets live in `assets/`; reference with absolute paths (`/assets/...`) because Astro only auto-copies `public/`
-- Never use external image URLs in production pages (use local or generated)
+- Store local images under `public/assets/`; reference them with absolute runtime paths like `/assets/...`
+- Files outside `public/assets/` are not served at `/assets/...` and can become 404 after build or deployment
+- For content covers, use `resolveAssetSrc(entry.cover)` before passing values to `<img src>`
+- Never use external image URLs in production pages unless explicitly required
 
 ## Component Checklist Before Shipping
 

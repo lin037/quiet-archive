@@ -16,13 +16,13 @@
     <td align="center"><b>Theme 2: Vibrant Forest</b></td>
   </tr>
   <tr>
-    <td><img src="./assets/material/theme-1.png" alt="Theme 1 Preview" width="360" /></td>
-    <td><img src="./assets/material/theme-2.png" alt="Theme 2 Preview" width="360" /></td>
+    <td><img src="./public/assets/material/theme-1.png" alt="Theme 1 Preview" width="360" /></td>
+    <td><img src="./public/assets/material/theme-2.png" alt="Theme 2 Preview" width="360" /></td>
   </tr>
 </table>
 
 <p align="center">
-  <img src="./assets/material/claude-code-usage.png" alt="使用 Claude Code 生成前端展示页面的示例" width="720" />
+  <img src="./public/assets/material/claude-code-usage.png" alt="使用 Claude Code 生成前端展示页面的示例" width="720" />
 </p>
 
 </div>
@@ -95,9 +95,8 @@ quiet-archive/
 │   ├── components/   组件
 │   ├── layouts/      布局
 │   └── styles/       设计 tokens
-├── public/           构建产物：索引 JSON + 搜索索引
+├── public/           静态资源：assets/ 图片 + 索引 JSON / 搜索索引
 ├── dist/             构建产物：静态站点 + /api/*.json
-├── assets/           图片等静态资源
 ├── docs/             项目文档
 └── .claude/skills/   Claude Code 使用的 skills
 ```

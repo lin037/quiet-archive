@@ -113,7 +113,7 @@ status: published                    # published | draft | archived
 summary: 一句话描述                   # 列表展示
 tags: [frontend, architecture]       # 标签数组
 featured: false                      # 是否精选
-cover: assets/covers/xxx.png         # 可选封面，指向 assets/ 下的图片
+cover: /assets/covers/xxx.png        # 可选封面，实际文件放在 public/assets/covers/ 下
 updated: 2026-05-06                  # 可选更新日期
 series: 前端编辑器                    # 可选所属系列
 order: 1                             # 可选自定义排序权重（越小越靠前）
@@ -122,27 +122,25 @@ order: 1                             # 可选自定义排序权重（越小越�
 
 ### 3.2 封面图 `cover`
 
-`cover` 是可选字段，用于文章卡片、详情页头图、分享图等前台展示场景。推荐把图片放在项目根目录的 `assets/` 下，并在 frontmatter 中写成**相对 `assets/` 的路径**：
-
-```yaml
-cover: assets/covers/my-post.png
-```
-
-也可以写成带前导 `/` 的形式：
+`cover` 是可选字段，用于文章卡片、详情页头图、分享图等前台展示场景。推荐把图片放在 `public/assets/` 下，并在 frontmatter 中写成站点根路径：
 
 ```yaml
 cover: /assets/covers/my-post.png
 ```
 
-两种写法都会被前端通过 `src/api/assets.ts` 中的 `resolveAssetSrc()` 解析为 Astro 构建后的图片地址。生成或编写前端时，应该优先使用：
+也就是说，运行时 URL `/assets/covers/my-post.png` 对应仓库中的 `public/assets/covers/my-post.png`。如果图片只放在项目根目录 `assets/` 下，构建或部署后访问 `/assets/...` 时可能出现 404。
+
+省略前导 `/` 的 `assets/covers/my-post.png` 也会被 `resolveAssetSrc()` 规范化为 `/assets/covers/my-post.png`，但实际文件仍应放在 `public/assets/covers/` 下。
+
+生成或编写前端时，应该优先使用：
 
 ```ts
 const coverSrc = resolveAssetSrc(entry.cover);
 ```
 
-不要直接把 `entry.cover` 当作最终 `<img src>` 使用，否则在 Astro 构建后的资源路径、哈希文件名和部署前缀场景下可能不稳定。
+不要直接把 `entry.cover` 当作最终 `<img src>` 使用；渲染前应通过 `resolveAssetSrc()` 统一规范化。
 
-如果文章没有 `cover`，前端可以根据视觉设计使用排版、类型标签、占位图片或纯文字卡片作为回退。项目自带的占位图片位于 `assets/placeholders/`，适合开发前端时测试不同图片比例。
+如果文章没有 `cover`，前端可以根据视觉设计使用排版、类型标签、占位图片或纯文字卡片作为回退。项目自带的占位图片位于 `public/assets/placeholders/`，运行时路径为 `/assets/placeholders/...`。
 
 ### 3.3 目录页（`README.md`）
 
@@ -325,7 +323,7 @@ npm run dev  # 预览确认
 ### 6.5 添加图片
 
 ```
-assets/
+public/assets/
   article/
     frontend-editor/
       dom-view-layer-fig-1.png
@@ -336,6 +334,8 @@ assets/
 ```markdown
 ![DOM view layer](/assets/article/frontend-editor/dom-view-layer-fig-1.png)
 ```
+
+注意：Markdown 中写的是运行时 URL `/assets/...`，对应仓库里的物理路径是 `public/assets/...`。
 
 ---
 
@@ -379,7 +379,7 @@ assets/
 - [ ] `status: published`
 - [ ] `title` / `date` / `summary` / `tags` 都填了
 - [ ] 本地 `npm run dev` 预览过
-- [ ] 图片都放在 `assets/` 并用了正确路径
+- [ ] 图片都放在 `public/assets/` 并通过 `/assets/...` 引用
 - [ ] 代码块有语言标记（`` ```ts ``、`` ```bash ``）
 - [ ] commit message 格式类似：`article: <短描述>` / `note: <短描述>`
 

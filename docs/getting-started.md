@@ -122,7 +122,7 @@ npm run dev
 ```text
 /blog-frontend-bootstrap 请为这个博客项目重新设计并生成一套前端页面。
 
-请先自行阅读项目中的 docs、.claude/skills 和 assets/placeholders/image-ratios.md，
+请先自行阅读项目中的 docs、.claude/skills 和 public/assets/placeholders/image-ratios.md，
 理解项目 API、内容结构、设计规范、可用素材和约束后，再给出你的设计方案并开始实现。
 
 我的偏好：<用一句话描述网站名、风格或你想要的感觉；如果没有明确偏好，就让 Agent 自己判断>

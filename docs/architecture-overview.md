@@ -88,12 +88,12 @@ quiet-archive/
 │   └── styles/             ← 灵活表层：设计 token 与样式
 │
 ├── public/
+│   ├── assets/             静态图片资源，运行时通过 /assets/... 访问
 │   ├── content-index.json  构建产物：完整内容索引
 │   ├── route-map.json      构建产物：URI → 文件 id
 │   ├── archive-tree.json   构建产物：层级归档树
 │   └── search-index.json   构建产物：分词后的搜索索引
 │
-├── assets/                 图片等资源
 ├── docs/                   文档
 └── astro.config.mjs
 ```
@@ -190,7 +190,7 @@ posts/column/archive-story/
 | `description` | string | 描述（目录页用，回退到 summary） |
 | `tags` | string[] | 标签 |
 | `featured` | boolean | 是否精选 |
-| `cover` | string | 封面图路径，推荐写成 `assets/...`，前端用 `resolveAssetSrc()` 解析 |
+| `cover` | string | 封面图路径，推荐写成 `/assets/...`，前端用 `resolveAssetSrc()` 解析 |
 | `updated` | string | 更新日期 |
 | `series` | string | 所属系列 |
 | `order` | number | 自定义排序权重 |
@@ -205,13 +205,15 @@ README 专属字段：
 
 ### 4.5 图片资源与 `cover`
 
-文章的 `cover` 字段保存的是内容作者声明的资源路径，推荐指向项目根目录 `assets/` 下的图片，例如：
+文章的 `cover` 字段保存的是内容作者声明的资源路径，推荐指向 `public/assets/` 下的图片，并写成站点根路径：
 
 ```yaml
-cover: assets/covers/my-post.png
+cover: /assets/covers/my-post.png
 ```
 
-前端不要直接把 `entry.cover` 当作最终图片地址使用，而应该通过 `src/api/assets.ts` 的 `resolveAssetSrc(entry.cover)` 解析。这样 Astro 才能在构建时正确处理本地图片资源、哈希文件名和最终输出路径。
+运行时 URL `/assets/covers/my-post.png` 对应仓库中的 `public/assets/covers/my-post.png`。如果图片只放在项目根目录 `assets/` 下，构建或部署后访问 `/assets/...` 时可能出现 404。
+
+前端不要直接把 `entry.cover` 当作最终图片地址使用，而应该通过 `src/api/assets.ts` 的 `resolveAssetSrc(entry.cover)` 统一规范化。
 
 ---
 

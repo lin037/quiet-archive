@@ -138,13 +138,15 @@ interface ArchiveStats {
 
 | 函数 | 说明 |
 |---|---|
-| `resolveAssetSrc(path)` | 将 frontmatter 中声明的本地 `assets/` 图片路径解析为 Astro 构建后的图片地址；远程 `http(s)` 地址会原样返回 |
+| `resolveAssetSrc(path)` | 将 frontmatter 中声明的本地资源路径规范化为可直接访问的 URL；远程 `http(s)` 地址会原样返回 |
 
-文章 `cover` 字段推荐写成相对 `assets/` 的路径，例如：
+文章 `cover` 字段推荐指向 `public/assets/` 下的文件，并写成站点根路径：
 
 ```yaml
-cover: assets/covers/my-post.png
+cover: /assets/covers/my-post.png
 ```
+
+也就是说，运行时 URL `/assets/covers/my-post.png` 对应仓库中的 `public/assets/covers/my-post.png`。不要把图片只放在项目根目录 `assets/` 下，否则构建或部署后访问 `/assets/...` 时可能出现 404。
 
 页面渲染时使用：
 
@@ -152,7 +154,7 @@ cover: assets/covers/my-post.png
 const coverSrc = resolveAssetSrc(entry.cover);
 ```
 
-`ContentEntry.cover` 保留的是内容层声明值，不保证可以直接作为最终 `<img src>` 使用。
+`ContentEntry.cover` 保留的是内容层声明值，不保证带有站点根路径前缀，渲染前应通过 `resolveAssetSrc()` 统一规范化。
 
 ### 1.7 使用范例
 

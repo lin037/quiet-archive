@@ -157,8 +157,10 @@ The `cover` field stores the author's declared image path, not necessarily the f
 Recommended authoring format:
 
 ```yaml
-cover: assets/covers/my-post.png
+cover: /assets/covers/my-post.png
 ```
+
+Store local images under `public/assets/`. They are served from `/assets/...` at runtime.
 
 When rendering covers in Astro pages or components, always resolve the value through `resolveAssetSrc()` from `src/api/assets.ts`:
 
@@ -166,11 +168,11 @@ When rendering covers in Astro pages or components, always resolve the value thr
 const coverSrc = resolveAssetSrc(entry.cover);
 ```
 
-Do not pass `entry.cover` directly to `<img src>` unless it is already an external `http(s)` URL. `resolveAssetSrc()` handles local `assets/` imports and returns the Astro build output URL.
+Do not pass `entry.cover` directly to `<img src>` unless it is already an external `http(s)` URL. `resolveAssetSrc()` normalizes local paths into root-relative URLs.
 
 ## Placeholder Image Guidance
 
-The project includes local placeholder images under `assets/placeholders`. Read `assets/placeholders/image-ratios.md` before using them.
+The project includes local placeholder images under `public/assets/placeholders`. Read `public/assets/placeholders/image-ratios.md` before using them.
 
 Available placeholder ratios:
 
@@ -392,7 +394,7 @@ This structure exercises: multiple type columns, nested directories (3 levels de
 When executing this skill:
 
 1. Read `docs/content-authoring.md` and `docs/architecture-overview.md` to understand the content model and data flow.
-2. Inspect existing project files as needed: `src/layouts/BaseLayout.astro`, `src/api/*`, `src/content.config.ts`, `assets/placeholders/image-ratios.md`, and the current `posts/` structure.
+2. Inspect existing project files as needed: `src/layouts/BaseLayout.astro`, `src/api/*`, `src/content.config.ts`, `public/assets/placeholders/image-ratios.md`, and the current `posts/` structure.
 3. Ask at most one concise round of questions if site identity, visual direction, or capabilities are missing.
 4. If the user wants a quick start, use the default capability set and proceed.
 5. Create or replace frontend files without touching the stable core. Build page layouts on top of `BaseLayout.astro`.
